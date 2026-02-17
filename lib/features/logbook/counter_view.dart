@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'counter_controller.dart';
+import '../onboarding/onboarding_view.dart';
 
 class CounterView extends StatefulWidget {
-  const CounterView({super.key});
+  final String username; // 🔥 Langkah 5 (Terima Data)
+
+  const CounterView({super.key, required this.username});
 
   @override
   State<CounterView> createState() => _CounterViewState();
@@ -14,6 +17,17 @@ class _CounterViewState extends State<CounterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Welcome, ${widget.username}"), // 🔥 tampilkan username
+        backgroundColor: const Color(0xFF194569),
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _showLogoutDialog(),
+          ),
+        ],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -32,7 +46,7 @@ class _CounterViewState extends State<CounterView> {
                 const Text(
                   "LogBook: SRP Version",
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
@@ -128,8 +142,7 @@ class _CounterViewState extends State<CounterView> {
                 const SizedBox(height: 30),
 
                 // Riwayat aktivitas
-                SizedBox(
-                  height: 250,
+                Expanded(
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -155,13 +168,13 @@ class _CounterViewState extends State<CounterView> {
                               Color iconColor;
 
                               if (item.contains("Menambah")) {
-                                icon = Icons.add; // +
+                                icon = Icons.add;
                                 iconColor = Colors.green;
                               } else if (item.contains("Mengurangi")) {
-                                icon = Icons.remove; // -
+                                icon = Icons.remove;
                                 iconColor = Colors.red;
                               } else {
-                                icon = Icons.refresh; // reset
+                                icon = Icons.refresh;
                                 iconColor = Colors.blue;
                               }
 
@@ -171,18 +184,16 @@ class _CounterViewState extends State<CounterView> {
 
                               return Container(
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 12),
+                                  vertical: 8,
+                                  horizontal: 12,
+                                ),
                                 decoration: BoxDecoration(
                                   color: iconColor.withOpacity(0.08),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      icon,
-                                      color: iconColor,
-                                      size: 20,
-                                    ),
+                                    Icon(icon, color: iconColor, size: 20),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
@@ -243,15 +254,11 @@ class _CounterViewState extends State<CounterView> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text("Batal"),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               setState(() {
                 _controller.reset();
@@ -260,13 +267,39 @@ class _CounterViewState extends State<CounterView> {
               Navigator.pop(context);
 
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Counter berhasil direset"),
-                  duration: Duration(seconds: 2),
-                ),
+                const SnackBar(content: Text("Counter berhasil direset")),
               );
             },
             child: const Text("Reset"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Logout"),
+        content: const Text("Apakah kamu yakin ingin logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(context);
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const OnboardingView()),
+                (route) => false,
+              );
+            },
+            child: const Text("Logout"),
           ),
         ],
       ),
