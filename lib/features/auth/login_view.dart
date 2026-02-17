@@ -19,7 +19,7 @@ class _LoginViewState extends State<LoginView> {
   int _failedAttempts = 0;
   bool _isLocked = false;
 
-  // 🔥 SnackBar Modern
+  // SnackBar error
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

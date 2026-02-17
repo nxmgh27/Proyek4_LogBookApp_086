@@ -13,9 +13,29 @@ class CounterView extends StatefulWidget {
 
 class _CounterViewState extends State<CounterView> {
   final CounterController _controller = CounterController();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeController();
+  }
+
+  Future<void> _initializeController() async {
+    await _controller.init();
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Welcome, ${widget.username}"),
@@ -51,6 +71,7 @@ class _CounterViewState extends State<CounterView> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
                 // Card Total Hitungan
                 Container(
                   width: double.infinity,
@@ -78,6 +99,7 @@ class _CounterViewState extends State<CounterView> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
                 // Step Slider
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -107,6 +129,7 @@ class _CounterViewState extends State<CounterView> {
                   ),
                 ),
                 const SizedBox(height: 30),
+
                 // Tombol Kurang, Reset, Tambah
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -132,6 +155,7 @@ class _CounterViewState extends State<CounterView> {
                   ],
                 ),
                 const SizedBox(height: 30),
+
                 // Riwayat aktivitas
                 Expanded(
                   child: Container(
@@ -169,10 +193,6 @@ class _CounterViewState extends State<CounterView> {
                                 iconColor = Colors.blue;
                               }
 
-                              final parts = item.split(" pada ");
-                              final action = parts[0];
-                              final time = parts.length > 1 ? parts[1] : "";
-
                               return Container(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 8,
@@ -188,18 +208,11 @@ class _CounterViewState extends State<CounterView> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
-                                        action,
+                                        item,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: iconColor,
                                         ),
-                                      ),
-                                    ),
-                                    Text(
-                                      time,
-                                      style: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
                                       ),
                                     ),
                                   ],
@@ -241,7 +254,7 @@ class _CounterViewState extends State<CounterView> {
       builder: (context) => AlertDialog(
         title: const Text("Konfirmasi Reset"),
         content: const Text(
-          "Apakah kamu yakin ingin mereset counter?\nData riwayat tidak bisa dikembalikan.",
+          "Apakah kamu yakin ingin mereset?\nData riwayat tidak bisa dikembalikan.",
         ),
         actions: [
           TextButton(
@@ -257,7 +270,6 @@ class _CounterViewState extends State<CounterView> {
 
               Navigator.pop(context);
 
-              // SnackBar hijau mirip login
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text(
