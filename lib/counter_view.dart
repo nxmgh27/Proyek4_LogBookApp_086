@@ -114,7 +114,7 @@ class _CounterViewState extends State<CounterView> {
                       icon: Icons.refresh,
                       bgColor: const Color(0xFFBBDEFB),
                       iconColor: Colors.blue.shade700,
-                      onPressed: () => setState(() => _controller.reset()),
+                      onPressed: () => _showResetDialog(),
                     ),
                     _buildButton(
                       icon: Icons.add,
@@ -155,13 +155,13 @@ class _CounterViewState extends State<CounterView> {
                               Color iconColor;
 
                               if (item.contains("Menambah")) {
-                                icon = Icons.arrow_upward;
+                                icon = Icons.add; // +
                                 iconColor = Colors.green;
                               } else if (item.contains("Mengurangi")) {
-                                icon = Icons.arrow_downward;
+                                icon = Icons.remove; // -
                                 iconColor = Colors.red;
                               } else {
-                                icon = Icons.refresh;
+                                icon = Icons.refresh; // reset
                                 iconColor = Colors.blue;
                               }
 
@@ -169,41 +169,39 @@ class _CounterViewState extends State<CounterView> {
                               final action = parts[0];
                               final time = parts.length > 1 ? parts[1] : "";
 
-                              return Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: iconColor.withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: iconColor.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
                                       icon,
                                       color: iconColor,
                                       size: 20,
                                     ),
-                                  ),
-
-                                  const SizedBox(width: 12),
-
-                                  Expanded(
-                                    child: Text(
-                                      action,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        action,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: iconColor,
+                                        ),
                                       ),
                                     ),
-                                  ),
-
-                                  Text(
-                                    time,
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
+                                    Text(
+                                      time,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               );
                             },
                           ),
@@ -232,6 +230,46 @@ class _CounterViewState extends State<CounterView> {
       ),
       onPressed: onPressed,
       child: Icon(icon, size: 28, color: iconColor),
+    );
+  }
+
+  void _showResetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Reset"),
+        content: const Text(
+          "Apakah kamu yakin ingin mereset counter?\nData riwayat tidak bisa dikembalikan.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () {
+              setState(() {
+                _controller.reset();
+              });
+
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Counter berhasil direset"),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            child: const Text("Reset"),
+          ),
+        ],
+      ),
     );
   }
 }
