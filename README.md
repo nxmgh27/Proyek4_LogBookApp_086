@@ -1,16 +1,18 @@
 # logbook_app_086
 
-A new Flutter project.
+Bagaimana prinsip SRP membantu saat menambah fitur History Logger?
 
-## Getting Started
+Prinsip Single Responsibility Principle (SRP) menyatakan bahwa satu class hanya boleh memiliki satu tanggung jawab utama.
 
-This project is a starting point for a Flutter application.
+Dalam proyek ini:
 
-A few resources to get you started if this is your first Flutter project:
+CounterController → Bertanggung jawab pada logika bisnis (menghitung nilai, menyimpan history).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+CounterView → Bertanggung jawab pada tampilan UI dan interaksi user.
 
+<<<<<<< HEAD
+Saat menambahkan fitur History Logger, saya hanya perlu memodifikasi CounterController untuk menambahkan pencatatan riwayat, tanpa mengubah struktur utama UI secara besar-besaran.
+=======
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
@@ -26,6 +28,7 @@ CounterController → Bertanggung jawab pada logika bisnis (menghitung nilai, me
 CounterView → Bertanggung jawab pada tampilan UI dan interaksi user.
 
 Saat menambahkan fitur History Logger, hanya perlu memodifikasi CounterController untuk menambahkan pencatatan riwayat, tanpa mengubah struktur utama UI secara besar-besaran.
+>>>>>>> e07d3d6daa21ae121999224d7aa377115f137bf9
 
 Karena tanggung jawab sudah dipisah dengan jelas:
 

@@ -3,7 +3,7 @@ import 'counter_controller.dart';
 import '../onboarding/onboarding_view.dart';
 
 class CounterView extends StatefulWidget {
-  final String username; // 🔥 Langkah 5 (Terima Data)
+  final String username;
 
   const CounterView({super.key, required this.username});
 
@@ -18,7 +18,7 @@ class _CounterViewState extends State<CounterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Welcome, ${widget.username}"), // 🔥 tampilkan username
+        title: Text("Welcome, ${widget.username}"),
         backgroundColor: const Color(0xFF194569),
         foregroundColor: Colors.white,
         actions: [
@@ -42,7 +42,6 @@ class _CounterViewState extends State<CounterView> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-
                 const Text(
                   "LogBook: SRP Version",
                   style: TextStyle(
@@ -51,9 +50,7 @@ class _CounterViewState extends State<CounterView> {
                     color: Colors.white,
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 // Card Total Hitungan
                 Container(
                   width: double.infinity,
@@ -80,9 +77,7 @@ class _CounterViewState extends State<CounterView> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 // Step Slider
                 Container(
                   padding: const EdgeInsets.all(20),
@@ -111,9 +106,7 @@ class _CounterViewState extends State<CounterView> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
                 // Tombol Kurang, Reset, Tambah
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -138,9 +131,7 @@ class _CounterViewState extends State<CounterView> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 30),
-
                 // Riwayat aktivitas
                 Expanded(
                   child: Container(
@@ -266,8 +257,22 @@ class _CounterViewState extends State<CounterView> {
 
               Navigator.pop(context);
 
+              // SnackBar hijau mirip login
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Counter berhasil direset")),
+                SnackBar(
+                  content: const Text(
+                    "Reset berhasil!",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  duration: const Duration(seconds: 2),
+                ),
               );
             },
             child: const Text("Reset"),
@@ -295,7 +300,8 @@ class _CounterViewState extends State<CounterView> {
 
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const OnboardingView()),
+                MaterialPageRoute(
+                    builder: (context) => const OnboardingView()),
                 (route) => false,
               );
             },
