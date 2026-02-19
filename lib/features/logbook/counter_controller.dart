@@ -4,19 +4,18 @@ class CounterController {
   int _value = 0;
   int _step = 1;
 
-  // History list
+  final String username;
   final List<String> _history = [];
 
   int get value => _value;
   int get step => _step;
   List<String> get history => _history;
 
-  // SharedPreferences keys
-  static const String _keyValue = 'counter_value';
-  static const String _keyStep = 'counter_step';
-  static const String _keyHistory = 'counter_history';
+  String get _keyValue => 'counter_value_$username';
+  String get _keyStep => 'counter_step_$username';
+  String get _keyHistory => 'counter_history_$username';
 
-  CounterController();
+  CounterController({required this.username});
 
   Future<void> init() async {
     await _loadFromPrefs();
@@ -24,19 +23,19 @@ class CounterController {
 
   void increment() {
     _value += _step;
-    _addHistory("Menambah +$_step");
+    _addHistory("menambah +$_step");
     _saveToPrefs();
   }
 
   void decrement() {
     _value -= _step;
-    _addHistory("Mengurangi -$_step");
+    _addHistory("mengurangi -$_step");
     _saveToPrefs();
   }
 
   void reset() {
     _value = 0;
-    _addHistory("Reset ke 0");
+    _addHistory("reset ke 0");
     _saveToPrefs();
   }
 
@@ -48,13 +47,15 @@ class CounterController {
   void _addHistory(String action) {
     final now = DateTime.now();
     final time =
-        "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+        "${now.hour.toString().padLeft(2, '0')}:"
+        "${now.minute.toString().padLeft(2, '0')}";
 
-    final entry = " $action pada jam $time";
+    final entry = "User $username $action pada jam $time";
+
     _history.insert(0, entry);
 
-    // Misal maksimal 20 history
-    if (_history.length > 20) {
+    // Batas 5 terakhir
+    if (_history.length > 5) {
       _history.removeLast();
     }
 
@@ -79,5 +80,20 @@ class CounterController {
     _step = prefs.getInt(_keyStep) ?? 1;
     _history.clear();
     _history.addAll(prefs.getStringList(_keyHistory) ?? []);
+  }
+
+  // Greeting berdasarkan waktu
+  String getgreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 6 && hour < 12) {
+      return "Selamat Pagi";
+    } else if (hour >= 12 && hour < 15) {
+      return "Selamat Siang";
+    } else if (hour >= 15 && hour < 18) {
+      return "Selamat Sore";
+    } else {
+      return "Selamat Malam";
+    }
   }
 }

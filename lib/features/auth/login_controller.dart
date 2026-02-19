@@ -1,9 +1,8 @@
 class LoginController {
 
-  // Multiple Users
   final Map<String, String> _users = {
     "admin": "123",
-    "user1": "abc",
+    "Nike": "nk27",
   };
 
   bool login(String username, String password) {
