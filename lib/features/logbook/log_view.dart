@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'log_controller.dart';
 import 'models/log_model.dart';
+import '../onboarding/onboarding_view.dart';
 
 class LogView extends StatefulWidget {
   final String username;
@@ -15,22 +16,27 @@ class _LogViewState extends State<LogView> {
   final LogController _controller = LogController();
 
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
 
-  // Tambah
-  void _showAddDialog() {
+  void _showAddLogDialog() {
     _titleController.clear();
-    _descController.clear();
+    _contentController.clear();
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text("Tambah Catatan"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: _titleController),
-            TextField(controller: _descController),
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: "Judul"),
+            ),
+            TextField(
+              controller: _contentController,
+              decoration: const InputDecoration(labelText: "Deskripsi"),
+            ),
           ],
         ),
         actions: [
@@ -40,12 +46,10 @@ class _LogViewState extends State<LogView> {
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() {
-                _controller.addLog(
-                  _titleController.text,
-                  _descController.text,
-                );
-              });
+              _controller.addLog(
+                _titleController.text,
+                _contentController.text,
+              );
               Navigator.pop(context);
             },
             child: const Text("Simpan"),
@@ -55,20 +59,25 @@ class _LogViewState extends State<LogView> {
     );
   }
 
-  // Edit
-  void _showEditDialog(int index, LogModel log) {
+  void _showEditLogDialog(int index, LogModel log) {
     _titleController.text = log.title;
-    _descController.text = log.description;
+    _contentController.text = log.description;
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text("Edit Catatan"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: _titleController),
-            TextField(controller: _descController),
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: "Judul"),
+            ),
+            TextField(
+              controller: _contentController,
+              decoration: const InputDecoration(labelText: "Deskripsi"),
+            ),
           ],
         ),
         actions: [
@@ -78,16 +87,44 @@ class _LogViewState extends State<LogView> {
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() {
-                _controller.updateLog(
-                  index,
-                  _titleController.text,
-                  _descController.text,
-                );
-              });
+              _controller.updateLog(
+                index,
+                _titleController.text,
+                _contentController.text,
+              );
               Navigator.pop(context);
             },
             child: const Text("Update"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Logout"),
+        content: const Text("Apakah Anda yakin ingin keluar?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const OnboardingView()),
+                (route) => false,
+              );
+            },
+            child: const Text(
+              "Ya, keluar",
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -98,47 +135,55 @@ class _LogViewState extends State<LogView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Logbook - ${widget.username}"),
+        title: Text("Logbook: ${widget.username}"),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _showLogoutDialog,
+          ),
+        ],
       ),
 
-      body: _controller.logs.isEmpty
-          ? const Center(child: Text("Belum ada catatan"))
-          : ListView.builder(
-              itemCount: _controller.logs.length,
-              itemBuilder: (context, index) {
-                final log = _controller.logs[index];
+      body: ValueListenableBuilder<List<LogModel>>(
+        valueListenable: _controller.logsNotifier,
+        builder: (context, logs, child) {
+          if (logs.isEmpty) {
+            return const Center(child: Text("Belum ada catatan."));
+          }
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.note),
-                    title: Text(log.title),
-                    subtitle: Text(log.description),
-                    trailing: Wrap(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () =>
-                              _showEditDialog(index, log),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              _controller.removeLog(index);
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+          return ListView.builder(
+            itemCount: logs.length,
+            itemBuilder: (context, index) {
+              final log = logs[index];
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: ListTile(
+                  leading: const Icon(Icons.note),
+                  title: Text(log.title),
+                  subtitle: Text(log.description),
+                  trailing: Wrap(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _showEditLogDialog(index, log),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _controller.removeLog(index),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
+        onPressed: _showAddLogDialog,
         child: const Icon(Icons.add),
       ),
     );
