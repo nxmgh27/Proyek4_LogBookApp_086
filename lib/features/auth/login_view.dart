@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'login_controller.dart';
-import '../logbook/counter_view.dart';
+import '../logbook/log_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -64,11 +64,12 @@ class _LoginViewState extends State<LoginView> {
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              CounterView(username: username),
+              LogView(username: username),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var slideTween =
-                Tween(begin: const Offset(0, 1), end: Offset.zero)
-                    .chain(CurveTween(curve: Curves.easeInOut));
+            var slideTween = Tween(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.easeInOut));
             var fadeTween = Tween<double>(begin: 0, end: 1);
             return SlideTransition(
               position: animation.drive(slideTween),
@@ -164,7 +165,9 @@ class _LoginViewState extends State<LoginView> {
                           filled: true,
                           fillColor: Colors.white,
                           contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 12),
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -188,7 +191,9 @@ class _LoginViewState extends State<LoginView> {
                           filled: true,
                           fillColor: Colors.white,
                           contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 12),
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
