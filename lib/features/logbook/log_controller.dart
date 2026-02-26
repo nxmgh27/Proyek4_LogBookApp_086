@@ -7,11 +7,20 @@ class LogController {
   final ValueNotifier<List<LogModel>> logsNotifier =
       ValueNotifier<List<LogModel>>([]);
 
+  final ValueNotifier<List<LogModel>> filteredLogs =
+      ValueNotifier<List<LogModel>>([]);
+
   static const String storageKey = 'log_data';
 
   LogController() {
     loadLogs();
   }
+
+  List<String> get categories => [
+        "Pekerjaan",
+        "Pribadi",
+        "Urgent",
+      ];
 
   Future<void> loadLogs() async {
     final prefs = await SharedPreferences.getInstance();
@@ -19,57 +28,83 @@ class LogController {
 
     if (jsonString != null) {
       final List decoded = jsonDecode(jsonString);
-
       logsNotifier.value =
           decoded.map((item) => LogModel.fromJson(item)).toList();
     }
+
+    filteredLogs.value = logsNotifier.value;
   }
 
   Future<void> saveLogs() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final List<Map<String, dynamic>> jsonList =
+    final jsonList =
         logsNotifier.value.map((log) => log.toJson()).toList();
 
-    final jsonString = jsonEncode(jsonList);
-
-    await prefs.setString(storageKey, jsonString);
+    await prefs.setString(storageKey, jsonEncode(jsonList));
   }
 
+  // Search
+  void searchLog(String query) {
+    if (query.isEmpty) {
+      filteredLogs.value = logsNotifier.value;
+    } else {
+      filteredLogs.value = logsNotifier.value
+          .where((log) =>
+              log.title.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+  }
 
-  void addLog(String title, String description) {
-    final updatedList = List<LogModel>.from(logsNotifier.value);
+  // CRUD
+  void addLog(String title, String description, String category) {
+    final updated = List<LogModel>.from(logsNotifier.value);
 
-    updatedList.add(
+    updated.add(
       LogModel(
         title: title,
         description: description,
+        category: category,
         timestamp: DateTime.now(),
       ),
     );
 
-    logsNotifier.value = updatedList;
+    logsNotifier.value = updated;
+    filteredLogs.value = updated;
     saveLogs();
   }
 
-  void updateLog(int index, String title, String description) {
-    final updatedList = List<LogModel>.from(logsNotifier.value);
+  void updateLog(
+      int index, String title, String description, String category) {
+    final updated = List<LogModel>.from(logsNotifier.value);
 
-    updatedList[index] = LogModel(
+    updated[index] = LogModel(
       title: title,
       description: description,
+      category: category,
       timestamp: DateTime.now(),
     );
 
-    logsNotifier.value = updatedList;
+    logsNotifier.value = updated;
+    filteredLogs.value = updated;
     saveLogs();
   }
 
   void removeLog(int index) {
-    final updatedList = List<LogModel>.from(logsNotifier.value);
-    updatedList.removeAt(index);
+    final updated = List<LogModel>.from(logsNotifier.value);
+    updated.removeAt(index);
 
-    logsNotifier.value = updatedList;
+    logsNotifier.value = updated;
+    filteredLogs.value = updated;
     saveLogs();
+  }
+
+  String getgreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 6 && hour < 12) return "Selamat Pagi";
+    if (hour < 15) return "Selamat Siang";
+    if (hour < 18) return "Selamat Sore";
+    return "Selamat Malam";
   }
 }

@@ -1,12 +1,14 @@
 class LogModel {
-  String title;
-  String description;
-  DateTime timestamp;
+  final String title;
+  final String description;
+  final DateTime timestamp;
+  final String category;
 
   LogModel({
     required this.title,
     required this.description,
     required this.timestamp,
+    required this.category,
   });
 
   Map<String, dynamic> toJson() {
@@ -14,6 +16,7 @@ class LogModel {
       'title': title,
       'description': description,
       'timestamp': timestamp.toIso8601String(),
+      'category': category,
     };
   }
 
@@ -22,6 +25,7 @@ class LogModel {
       title: json['title'],
       description: json['description'],
       timestamp: DateTime.parse(json['timestamp']),
+      category: json['category'],
     );
   }
 }

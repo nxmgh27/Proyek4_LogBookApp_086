@@ -19,9 +19,7 @@ class _CounterViewState extends State<CounterView> {
   @override
   void initState() {
     super.initState();
-    _controller = CounterController(
-      username: widget.username,
-    );
+    _controller = CounterController(username: widget.username);
     _initializeController();
   }
 
@@ -35,9 +33,7 @@ class _CounterViewState extends State<CounterView> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return WillPopScope(
@@ -49,11 +45,15 @@ class _CounterViewState extends State<CounterView> {
                 const LoginView(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              var tween =
-                  Tween(begin: const Offset(-1, 0), end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeInOut));
-              return SlideTransition(position: animation.drive(tween), child: child);
-            },
+                  var tween = Tween(
+                    begin: const Offset(-1, 0),
+                    end: Offset.zero,
+                  ).chain(CurveTween(curve: Curves.easeInOut));
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
             transitionDuration: const Duration(milliseconds: 500),
           ),
         );
@@ -64,12 +64,9 @@ class _CounterViewState extends State<CounterView> {
           automaticallyImplyLeading: false,
           title: Text(
             "${_controller.getgreeting()}, ${widget.username}👋!",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          backgroundColor: const Color(0xFF243C2C), 
+          backgroundColor: const Color(0xFF243C2C),
           foregroundColor: const Color(0xFFECE69D),
           actions: [
             IconButton(
@@ -83,10 +80,7 @@ class _CounterViewState extends State<CounterView> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF59789F),
-                Color(0xFFA9B6C4),
-              ],
+              colors: [Color(0xFF59789F), Color(0xFFA9B6C4)],
             ),
           ),
           child: SafeArea(
@@ -167,7 +161,7 @@ class _CounterViewState extends State<CounterView> {
                   ),
                   const SizedBox(height: 30),
 
-                  // Button 
+                  // Button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -214,9 +208,7 @@ class _CounterViewState extends State<CounterView> {
                           ? const Center(
                               child: Text(
                                 "Belum ada aktivitas",
-                                style: TextStyle(
-                                  color: Color(0xFF243C2C),
-                                ),
+                                style: TextStyle(color: Color(0xFF243C2C)),
                               ),
                             )
                           : ListView.separated(
@@ -352,12 +344,15 @@ class _CounterViewState extends State<CounterView> {
                       const LoginView(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    var tween =
-                        Tween(begin: const Offset(-1, 0), end: Offset.zero)
-                            .chain(CurveTween(curve: Curves.easeInOut));
-                    return SlideTransition(
-                        position: animation.drive(tween), child: child);
-                  },
+                        var tween = Tween(
+                          begin: const Offset(-1, 0),
+                          end: Offset.zero,
+                        ).chain(CurveTween(curve: Curves.easeInOut));
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
                   transitionDuration: const Duration(milliseconds: 500),
                 ),
                 (route) => false,
